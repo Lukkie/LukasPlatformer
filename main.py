@@ -1,8 +1,8 @@
 import pygame
-
 from character import Character
-from entities import Entities
 from screen import Screen
+
+from entities import Entities
 
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -14,6 +14,10 @@ class App:
         self._running = True
         self.fps = 150
         self.alive = True
+        self.difficulty = 0.1
+
+        # Entitites
+        self.entities = None
 
         # Screen
         self.screen = None
@@ -33,7 +37,7 @@ class App:
         self._running = True
 
         # Entitites
-        self.entities = Entities()
+        self.entities = Entities(self.difficulty)
 
         # Screen
         self.screen = Screen()
@@ -59,9 +63,8 @@ class App:
             # if key == pygame.K_RIGHT
             #     self.charX = (self.charX + self.speed) % self.width
             if not self.alive:
-                if key == pygame.K_RETURN:
+                if key == pygame.K_RETURN or key == pygame.K_SPACE:
                     self.restart_game()
-
 
     def on_loop(self):
         if self.alive:
@@ -81,21 +84,22 @@ class App:
 
             # Movement
             # Left - Right
-            if pressed[pygame.K_RIGHT] and not pressed[pygame.K_LEFT]:
-                self.char.move_right()
-            elif pressed[pygame.K_LEFT] and not pressed[pygame.K_RIGHT]:
+            left_pressed = pressed[pygame.K_LEFT] or pressed[pygame.K_a]
+            right_pressed = pressed[pygame.K_RIGHT] or pressed[pygame.K_d]
+            if left_pressed and not right_pressed:
                 self.char.move_left()
+            elif right_pressed and not left_pressed:
+                self.char.move_right()
 
             # Jumping
-            if pressed[pygame.K_UP]:
+            if pressed[pygame.K_UP] or pressed[pygame.K_w]:
                 self.char.jump()
             # elif self.char.jumping:  # TODO: In character zelf checken?
             #     self.char.jump()
 
             # Shooting
-            if pressed[pygame.K_SPACE] or pressed[pygame.K_DOWN]:
-                self.char.shoot()
-
+            if pygame.mouse.get_pressed()[0]:
+                self.char.shoot(self.mouseX, self.mouseY)
 
     def on_render(self):
         self.screen.fill(black)
@@ -119,7 +123,7 @@ class App:
             self.screen.surface.blit(label1, textpos1)
 
             font2 = pygame.font.SysFont("monospace", 20)
-            label2 = font2.render("Press ENTER to restart", 1, white)
+            label2 = font2.render("Press ENTER or SPACE to restart", 1, white)
             textpos2 = label2.get_rect()
             textpos2.centerx = self.screen.surface.get_rect().centerx
             textpos2.centery = textpos1.centery + textpos1.height

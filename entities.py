@@ -1,15 +1,20 @@
+from random import randint, random
+
 from enemy import Enemy
-from random import randint
 
 
 class Entities:
-    def __init__(self):
+    def __init__(self, difficulty):
+        self.difficulty = difficulty  # By how much the max_speed of enemies per cycle
+
         self.bullets = []
         self.enemies = []
         self.char = None  # Needs to be changed
 
         self.enemyrate = 150  # How many frames between enemies
         self.enemyindex = 0
+        self.min_speed = 0.5
+        self.max_speed = 3
 
     def add_bullet(self, bullet):
         self.bullets.append(bullet)
@@ -33,7 +38,6 @@ class Entities:
 
     def update_enemies(self):
         """
-
         :return: False if game over, True else
         """
         for enemy in self.enemies:
@@ -68,16 +72,13 @@ class Entities:
         if self.enemyindex >= self.enemyrate:
             self.enemyindex = 0
 
-            # Generate random enemy
-            random_direction = randint(0, 1)  # 1 is to the right, 0 is left
-            orientation = random_direction * 2 - 1
-            size = randint(20, 100)
-            y_loc = screen.horizon - size
-            x_loc = screen.width * (1-random_direction) - random_direction*size
-            # x_loc = 300
-            speed = randint(1, 2)
+            size = randint(20, 50)
+            x_loc = screen.width - randint(0, 1)*(screen.width+size)
+            y_loc = randint(size, screen.horizon-size)
+            speed = self.min_speed + (self.max_speed-self.min_speed)*random()
 
-            enemy = Enemy(x_loc, y_loc, orientation, speed, size, screen)
+            enemy = Enemy(x_loc, y_loc, speed, size, screen, self.char)
             self.add_enemy(enemy)
+            self.max_speed += self.difficulty
         else:
             self.enemyindex += 1

@@ -1,7 +1,7 @@
 import pygame
 
 from bullet import Bullet
-
+import math
 
 class Character:
     def __init__(self, screen, entities):
@@ -22,17 +22,15 @@ class Character:
         self.charcolor = (255, 255, 255)  # White
 
         # Shooting
-        self.orientation = 1  # 1 if right, -1 if left
+        self.bullet_speed = 5
         self.firerate = 20  # how many frames to wait until next bullet
         self.fireindex = 0  # Will count to firerate until it can shoot again
 
     def move_right(self):
         self.charX = (self.charX + self.speed) % self.screen.width
-        self.orientation = 1
 
     def move_left(self):
         self.charX = (self.charX - self.speed) % self.screen.width
-        self.orientation = -1
 
     def jump(self):
         if not self.jumping:
@@ -43,17 +41,26 @@ class Character:
         self.rect = pygame.Rect(self.charX, self.charY, self.charHeight, self.charHeight)
         pygame.draw.rect(self.screen.surface, self.charcolor, self.rect)
 
-    def shoot(self):
+    def shoot(self, target_x, target_y):
         if 0 < self.fireindex <= self.firerate:
             # Bullet is already shooting
             pass
         else:
+            # Restart cooldown for shots
             self.fireindex = 1
+
+            # Calculate relative x and y speed
+            x_diff = target_x - self.charX
+            y_diff = target_y - self.charY
+            alpha = math.atan2(y_diff, x_diff)
+            x_speed = math.cos(alpha) * self.bullet_speed
+            y_speed = math.sin(alpha) * self.bullet_speed
+
             # Create bullet and add to list in entities
-            speed = 5
+            speed = 5.0
             size = 4
             bullet = Bullet(self.charX, self.charY + self.charHeight/2 - size/2,
-                            self.orientation, speed, size, self.screen)
+                            x_speed, y_speed, size, self.screen)
             self.entities.add_bullet(bullet)
 
     def update_activities(self):

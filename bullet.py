@@ -2,11 +2,11 @@ import pygame
 
 
 class Bullet:
-    def __init__(self, x_loc, y_loc, orientation, speed, size, screen):
+    def __init__(self, x_loc, y_loc, x_speed, y_speed, size, screen):
         self.x_loc = x_loc
-        self.speed = speed
+        self.x_speed = x_speed
+        self.y_speed = y_speed
         self.y_loc = y_loc
-        self.orientation = orientation
         self.screen = screen
 
         self.color = (255, 255, 255)
@@ -18,9 +18,12 @@ class Bullet:
         """
         :return: True if inside window, else False
         """
-        self.x_loc += (self.orientation*self.speed)
+        self.x_loc += self.x_speed
+        self.y_loc += self.y_speed
         self.rect = pygame.Rect(self.x_loc, self.y_loc, self.size, self.size)
-        if 0 <= self.x_loc < self.screen.width:
+
+        # Still inside window?
+        if self.rect.colliderect(self.screen.surface.get_rect()):
             return True
         return False
 
