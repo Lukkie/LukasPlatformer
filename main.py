@@ -3,6 +3,7 @@ from character import Character
 from screen import Screen
 
 from entities import Entities
+from sprites import Sprites
 from world import World
 
 white = (255, 255, 255)
@@ -17,6 +18,9 @@ class App:
         self.alive = True
         self.difficulty = 0.1
 
+        # Sprites
+        self.sprites = None
+
         # Entitites
         self.entities = None
 
@@ -28,6 +32,7 @@ class App:
 
         # World
         self.world = None
+        self.buffer = 200
 
         # Stats
         self.playtime = 0.0
@@ -40,14 +45,18 @@ class App:
         pygame.init()
         self._running = True
 
-        # Entitites
-        self.entities = Entities(self.difficulty)
-
         # Screen
         self.screen = Screen()
 
+        # Sprites
+        self.sprites = Sprites()
+        self.sprites.load_sprites(r'sprites\player\p2')
+
+        # Entitites
+        self.entities = Entities(self.difficulty)
+
         # Character
-        self.char = Character(self.screen, self.entities)
+        self.char = Character(self.screen, self.entities, self.sprites)
         self.entities.char = self.char
 
         # World
@@ -72,6 +81,8 @@ class App:
             self.mouseX, self.mouseY = pygame.mouse.get_pos()
         elif event.type == pygame.KEYDOWN:
             key = event.key
+            if key == pygame.K_ESCAPE:
+                self._running = False
             # Debug and testing
             if key == pygame.K_SPACE:
                 print("Char: (%s, %s) - Rect: (%s, %s)" %
@@ -113,19 +124,18 @@ class App:
                 self.char.shoot(self.mouseX, self.mouseY)
 
     def move_left(self):
-        buffer = 100
-        if self.char.charX - self.char.speed <= buffer:  # At start of world bound
+        if self.char.charX - self.char.speed <= self.buffer:  # At start of world bound
             pass  # do nothing
-        elif self.char.rect.x <= buffer:  # At buffer bound
+        elif self.char.rect.x <= self.buffer:  # At buffer bound
             self.world.shift_world(self.char.speed)
         else:
             self.char.move_left()
 
     def move_right(self):
-        buffer = 100
-        if self.char.charX + self.char.speed >= self.world.limit - buffer:  # At start of world bound
+
+        if self.char.charX + self.char.speed >= self.world.limit - self.buffer:  # At start of world bound
             pass  # do nothing
-        elif self.char.rect.x >= self.screen.width - buffer:  # At buffer bound
+        elif self.char.rect.x >= self.screen.width - self.buffer:  # At buffer bound
             self.world.shift_world(-self.char.speed)
         else:
             self.char.move_right()

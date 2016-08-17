@@ -6,12 +6,13 @@ class Screen:
     def __init__(self):
         # TODO: Dynamisch aanmaken?
         self.surface = None
-        self.size = self.width, self.height = 640, 512
+        self.size = self.width, self.height = 1024, 512
         self.horizon = self.height - 64
 
         self.floorcolor = (255, 255, 255)  # white
 
         # Display
+        # Add "pygame.FULLSCREEN | " to flags for better experience
         self.surface = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         pygame.display.set_caption('Lukas Platformer')
 
