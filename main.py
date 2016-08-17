@@ -3,6 +3,7 @@ from character import Character
 from screen import Screen
 
 from entities import Entities
+from world import World
 
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -25,6 +26,9 @@ class App:
         # Character
         self.char = None
 
+        # World
+        self.world = None
+
         # Stats
         self.playtime = 0.0
         self.score = 0
@@ -46,6 +50,14 @@ class App:
         self.char = Character(self.screen, self.entities)
         self.entities.char = self.char
 
+        # World
+        self.world = World()
+        self.world.background = pygame.image.load(r'backgrounds\Background1.png').convert_alpha()
+        self.world.screen = self.screen
+        self.world.entities = self.entities
+        self.world.limit = 3200
+        self.world.char = self.char
+
         # Clock
         self.clock = pygame.time.Clock()
 
@@ -60,8 +72,10 @@ class App:
             self.mouseX, self.mouseY = pygame.mouse.get_pos()
         elif event.type == pygame.KEYDOWN:
             key = event.key
-            # if key == pygame.K_RIGHT
-            #     self.charX = (self.charX + self.speed) % self.width
+            # Debug and testing
+            if key == pygame.K_SPACE:
+                print("Char: (%s, %s) - Rect: (%s, %s)" %
+                      (self.char.charX, self.char.charY, self.char.rect.x, self.char.rect.y))
             if not self.alive:
                 if key == pygame.K_RETURN or key == pygame.K_SPACE:
                     self.restart_game()
@@ -87,36 +101,51 @@ class App:
             left_pressed = pressed[pygame.K_LEFT] or pressed[pygame.K_a]
             right_pressed = pressed[pygame.K_RIGHT] or pressed[pygame.K_d]
             if left_pressed and not right_pressed:
-                self.char.move_left()
+                self.move_left()
             elif right_pressed and not left_pressed:
-                self.char.move_right()
-
+                self.move_right()
             # Jumping
             if pressed[pygame.K_UP] or pressed[pygame.K_w]:
                 self.char.jump()
-            # elif self.char.jumping:  # TODO: In character zelf checken?
-            #     self.char.jump()
 
             # Shooting
             if pygame.mouse.get_pressed()[0]:
                 self.char.shoot(self.mouseX, self.mouseY)
 
+    def move_left(self):
+        buffer = 100
+        if self.char.charX - self.char.speed <= buffer:  # At start of world bound
+            pass  # do nothing
+        elif self.char.rect.x <= buffer:  # At buffer bound
+            self.world.shift_world(self.char.speed)
+        else:
+            self.char.move_left()
+
+    def move_right(self):
+        buffer = 100
+        if self.char.charX + self.char.speed >= self.world.limit - buffer:  # At start of world bound
+            pass  # do nothing
+        elif self.char.rect.x >= self.screen.width - buffer:  # At buffer bound
+            self.world.shift_world(-self.char.speed)
+        else:
+            self.char.move_right()
+
     def on_render(self):
         self.screen.fill(black)
 
         if self.alive:
+            # Draw world
+            self.world.draw()
+
             # Draw character
             self.char.draw_char()
-
-            # Draw floor
-            self.screen.draw_floor()
 
             # Draw entities
             self.entities.draw_entities()
 
         else:  # Game over
             font1 = pygame.font.SysFont("monospace", 100)
-            label1= font1.render("GAME OVER", 1, white)
+            label1 = font1.render("GAME OVER", 1, white)
             textpos1 = label1.get_rect()
             textpos1.centerx = self.screen.surface.get_rect().centerx
             textpos1.centery = self.screen.surface.get_rect().centery

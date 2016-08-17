@@ -42,13 +42,9 @@ class Entities:
         """
         for enemy in self.enemies:
             alive = enemy.update_location()
-            if alive:
-                if enemy.check_collision(self.char):
-                    print("Game Over")
-                    return False
-            else:
-                self.enemies.remove(enemy)
-
+            if enemy.check_collision(self.char):
+                print("Game Over")
+                return False
         return True
 
     def update_entities(self):

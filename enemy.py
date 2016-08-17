@@ -16,12 +16,9 @@ class Enemy:
         self.rect = pygame.Rect(self.x_loc, self.y_loc, self.size, self.size)
 
     def update_location(self):
-        """
-        :return: True if inside window, else False
-        """
         # Calculate relative x and y speed
-        x_diff = self.char.charX - self.x_loc
-        y_diff = self.char.charY - self.y_loc
+        x_diff = self.char.rect.x - self.x_loc
+        y_diff = self.char.rect.y - self.y_loc
         alpha = math.atan2(y_diff, x_diff)
         x_speed = math.cos(alpha) * self.speed
         y_speed = math.sin(alpha) * self.speed
@@ -31,9 +28,6 @@ class Enemy:
         if self.y_loc >= self.screen.horizon - self.size:
             self.y_loc = self.screen.horizon - self.size  # Slide on floor if reaching horizon
         self.rect = pygame.Rect(self.x_loc, self.y_loc, self.size, self.size)
-        if self.x_loc + self.size >= 0 and self.x_loc < self.screen.width:
-            return True
-        return False
 
     def check_collision(self, char):
         if self.rect.colliderect(char.rect):
