@@ -33,9 +33,13 @@ class Bullet:
             # if self.x_loc <= enemy.x_loc <= self.x_loc + self.size and \
             #                         self.y_loc <= enemy.y_loc <= self.y_loc + self.size:
             if self.rect.colliderect(enemy.rect):
-                print("Enemy killed")
-                return enemy
-        return None
+                if enemy.hit_by_bullet():
+                    print("Enemy has %s health left" % enemy.health)
+                    return None, enemy
+                else:
+                    print("Enemy killed")
+                    return enemy, enemy
+        return None, None
 
     def draw(self):
         pygame.draw.rect(self.screen.surface, self.color,

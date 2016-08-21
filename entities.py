@@ -1,6 +1,13 @@
-from random import randint, random
+from random import randint
 
-from enemy import Enemy
+from enemies.bigbird import BigBird
+from enemies.enemy import Enemy
+from enemies.fastjumper import FastJumper
+from enemies.fastwalker import FastWalker
+from enemies.fatwalker import FatWalker
+from enemies.highjumper import HighJumper
+from enemies.jumper import Jumper
+from enemies.smallbird import SmallBird
 
 
 class Entities:
@@ -11,10 +18,8 @@ class Entities:
         self.enemies = []
         self.char = None  # Needs to be changed
 
-        self.enemyrate = 150  # How many frames between enemies
+        self.enemyrate = 600  # How many frames between enemies
         self.enemyindex = 0
-        self.min_speed = 0.5
-        self.max_speed = 3
 
     def add_bullet(self, bullet):
         self.bullets.append(bullet)
@@ -27,11 +32,13 @@ class Entities:
         for bullet in self.bullets:
             alive = bullet.update_location()
             if alive:
-                killed = bullet.check_collision(self.enemies)
+                killed, hit = bullet.check_collision(self.enemies)
                 if killed:
                     self.bullets.remove(bullet)
                     self.enemies.remove(killed)
                     score += 1
+                elif hit:
+                    self.bullets.remove(bullet)
             else:
                 self.bullets.remove(bullet)
         return score
@@ -41,7 +48,7 @@ class Entities:
         :return: False if game over, True else
         """
         for enemy in self.enemies:
-            alive = enemy.update_location()
+            enemy.update_location()
             if enemy.check_collision(self.char):
                 print("Game Over")
                 return False
@@ -50,6 +57,7 @@ class Entities:
     def update_entities(self):
         points = self.update_bullets()
         alive = self.update_enemies()
+        self.enemyrate *= self.difficulty
         return alive, points
 
     def draw_bullets(self):
@@ -64,17 +72,41 @@ class Entities:
         self.draw_bullets()
         self.draw_enemies()
 
-    def generate_enemies(self, screen):
+    # def generate_enemies(self, screen):
+    #     if self.enemyindex >= self.enemyrate:
+    #         self.enemyindex = 0
+    #
+    #         # size = randint(20, 50)
+    #         size = 20
+    #         x_loc = screen.width - randint(0, 1)*(screen.width+size)
+    #         y_loc = randint(size, screen.horizon-size)
+    #         # speed = self.min_speed + (self.max_speed-self.min_speed)*random()
+    #
+    #         enemy = Enemy(x_loc, y_loc, screen, self.char)
+    #         self.add_enemy(enemy)
+    #         self.max_speed += self.difficulty
+    #     else:
+    #         self.enemyindex += 1
+
+    def generate_enemies(self, screen, sprites):
         if self.enemyindex >= self.enemyrate:
             self.enemyindex = 0
 
-            size = randint(20, 50)
-            x_loc = screen.width - randint(0, 1)*(screen.width+size)
-            y_loc = randint(size, screen.horizon-size)
-            speed = self.min_speed + (self.max_speed-self.min_speed)*random()
+            random_enemy = randint(0, 5)
+            enemy = None
+            if random_enemy == 0:
+                enemy = FatWalker(screen, self.char, sprites)
+            elif random_enemy == 1:
+                enemy = SmallBird(screen, self.char, sprites)
+            elif random_enemy == 2:
+                enemy = HighJumper(screen, self.char, sprites)
+            elif random_enemy == 3:
+                enemy = FastJumper(screen, self.char, sprites)
+            elif random_enemy == 4:
+                enemy = BigBird(screen, self.char, sprites)
+            elif random_enemy == 5:
+                enemy = FastWalker(screen, self.char, sprites)
 
-            enemy = Enemy(x_loc, y_loc, speed, size, screen, self.char)
             self.add_enemy(enemy)
-            self.max_speed += self.difficulty
         else:
             self.enemyindex += 1

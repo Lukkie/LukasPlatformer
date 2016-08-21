@@ -11,7 +11,9 @@ class Sprites:
         self.player_jump_right = None
         self.player_idle = None
 
-    def load_sprites(self, directory):
+        self.enemy_sprites = {}
+
+    def load_player_sprites(self, directory):
         self.load_walk_sprites('%s\\%s' % (directory, "walk"))
         self.load_idle_sprite('%s\\%s' % (directory, "idle"))
         self.load_jump_sprite('%s\\%s' % (directory, "jump"))
@@ -39,3 +41,10 @@ class Sprites:
         image = pygame.image.load('%s\\%s' % (directory, filename)).convert_alpha()
         self.player_jump_right = image
         self.player_jump_left = pygame.transform.flip(image.copy(), True, False)
+
+    def load_enemy_sprites(self, directory):
+        for filename in os.listdir(directory):
+            if filename.endswith(".png"):
+                image = pygame.image.load('%s\\%s' % (directory, filename)).convert_alpha()
+                name = filename.replace(".png", "")
+                self.enemy_sprites[name] = image

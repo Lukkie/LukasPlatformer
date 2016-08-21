@@ -24,6 +24,11 @@ class World:
         self.shift += shift_x
         self.char.charX -= shift_x
 
+        if shift_x > 0:
+            self.char.move_left_animation()
+        else:
+            self.char.move_right_animation()
+
         for bullet in self.entities.bullets:
             bullet.x_loc += shift_x
 

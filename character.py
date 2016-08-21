@@ -38,16 +38,23 @@ class Character:
 
     def move_right(self):
         self.move(self.speed)
-        self.move_state = "R"
+        self.move_right_animation()
 
     def move_left(self):
         self.move(-self.speed)
+        self.move_left_animation()
+
+    def move_left_animation(self):
         self.move_state = "L"
+        self.walk_index = (self.walk_index + 1) % self.walk_max_index
+
+    def move_right_animation(self):
+        self.move_state = "R"
+        self.walk_index = (self.walk_index + 1) % self.walk_max_index
 
     def move(self, amount):
         self.charX = (self.charX + amount)
         self.rect.x = (self.rect.x + amount)
-        self.walk_index = (self.walk_index + 1) % self.walk_max_index
 
     def jump(self):
         if not self.jumping:
@@ -80,14 +87,6 @@ class Character:
         else:
             # Restart cooldown for shots
             self.fireindex = 1
-
-            # # X-Position of 'gun'
-            # if self.move_state == "I":
-            #     gun_pos = self.rect.centerx
-            # elif self.move_state == "L":
-            #     gun_pos = self.rect.x
-            # else:
-            #     gun_pos = self.rect.right
 
             # Calculate relative x and y speed
             x_diff = target_x - self.rect.centerx

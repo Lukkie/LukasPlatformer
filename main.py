@@ -10,13 +10,19 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 
 
+# TODO: * Bullet sprite + effect when enemy killed
+# TODO: * Enemy sprites
+# TODO:     - Multiple classes of enemies
+# TODO:     - Enemies have specific health and speed, and can either fly or walk
+# TODO: * Sound effects
+# TODO: * Weapon pick-ups with higher firerate, bigger bullets, more damage
 class App:
     def __init__(self):
         self.clock = None
         self._running = True
         self.fps = 150
         self.alive = True
-        self.difficulty = 0.1
+        self.difficulty = 0.9999  # ]0, 1] Higher is easier
 
         # Sprites
         self.sprites = None
@@ -32,7 +38,7 @@ class App:
 
         # World
         self.world = None
-        self.buffer = 200
+        self.buffer = 300
 
         # Stats
         self.playtime = 0.0
@@ -50,7 +56,8 @@ class App:
 
         # Sprites
         self.sprites = Sprites()
-        self.sprites.load_sprites(r'sprites\player\p2')
+        self.sprites.load_player_sprites(r'sprites\player\p1')
+        self.sprites.load_enemy_sprites(r'sprites\enemy')
 
         # Entitites
         self.entities = Entities(self.difficulty)
@@ -105,7 +112,7 @@ class App:
             self.score += points
 
             # Generate enemies
-            self.entities.generate_enemies(self.screen)
+            self.entities.generate_enemies(self.screen, self.sprites)
 
             # Movement
             # Left - Right
@@ -194,6 +201,11 @@ class App:
         textpos = label.get_rect()
         textpos.topleft = (20, 20)
         self.screen.surface.blit(label, textpos)
+        diff_label = myfont.render("Difficulty: %s enemies/sec" %
+                                   round(self.fps / self.entities.enemyrate, 2), 1, white)
+        diff_textpos = label.get_rect()
+        diff_textpos.topright = (self.screen.width - 250, 20)
+        self.screen.surface.blit(diff_label, diff_textpos)
 
     def restart_game(self):
         self.alive = True
