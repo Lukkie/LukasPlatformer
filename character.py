@@ -36,6 +36,14 @@ class Character:
         self.firerate = 20  # how many frames to wait until next bullet
         self.fireindex = 0  # Will count to firerate until it can shoot again
 
+        # Sound
+        pygame.mixer.pre_init(22050, -16, 2, 128)
+        pygame.init()
+        pygame.mixer.quit()
+        pygame.mixer.init(22050, -16, 2, 128)
+        self.gun_sound = pygame.mixer.Sound(r'sounds\M4A1_Single-Kibblesbob-8540445.wav')
+        self.gun_sound.set_volume(0.25)
+
     def move_right(self):
         self.move(self.speed)
         self.move_right_animation()
@@ -85,6 +93,10 @@ class Character:
             # Bullet is already shooting
             pass
         else:
+            # Play sound
+            self.gun_sound.stop()
+            self.gun_sound.play()
+
             # Restart cooldown for shots
             self.fireindex = 1
 

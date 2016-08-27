@@ -11,9 +11,6 @@ black = (0, 0, 0)
 
 
 # TODO: * Bullet sprite + effect when enemy killed
-# TODO: * Enemy sprites
-# TODO:     - Multiple classes of enemies
-# TODO:     - Enemies have specific health and speed, and can either fly or walk
 # TODO: * Sound effects
 # TODO: * Weapon pick-ups with higher firerate, bigger bullets, more damage
 class App:
