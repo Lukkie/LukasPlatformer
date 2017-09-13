@@ -13,3 +13,4 @@ class BigBird(Floater):
         self.speed = 1
         self.health = 10
         self.sprite = pygame.transform.smoothscale(sprites.enemy_sprites["bigbird"], (size, size))
+        self.points = 3

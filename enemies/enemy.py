@@ -6,6 +6,7 @@ class Enemy(object):
         # Following attributes should be assigned by subclasses
         self.speed = 2
         self.health = 1
+        self.points = 1
         self.size = 20
         self.sprite = None
         self.x_loc = 0

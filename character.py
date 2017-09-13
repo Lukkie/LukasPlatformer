@@ -1,7 +1,19 @@
+import os
 import pygame
+import sys
 
 from bullet import Bullet
 import math
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 class Character:
@@ -41,7 +53,7 @@ class Character:
         pygame.init()
         pygame.mixer.quit()
         pygame.mixer.init(22050, -16, 2, 128)
-        self.gun_sound = pygame.mixer.Sound(r'sounds\M4A1_Single-Kibblesbob-8540445.wav')
+        self.gun_sound = pygame.mixer.Sound(resource_path(r'sounds\M4A1_Single-Kibblesbob-8540445.wav'))
         self.gun_sound.set_volume(0.25)
 
     def move_right(self):

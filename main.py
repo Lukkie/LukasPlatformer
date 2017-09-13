@@ -1,4 +1,7 @@
+import os
 import pygame
+import sys
+
 from character import Character
 from screen import Screen
 
@@ -8,6 +11,16 @@ from world import World
 
 white = (255, 255, 255)
 black = (0, 0, 0)
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 # TODO: * Bullet sprite + effect when enemy killed
@@ -39,6 +52,7 @@ class App:
 
         # Stats
         self.playtime = 0.0
+        self.lastboss = 0.0
         self.score = 0
 
         # Mouse
@@ -65,7 +79,7 @@ class App:
 
         # World
         self.world = World()
-        self.world.background = pygame.image.load(r'backgrounds\Background1.png').convert_alpha()
+        self.world.background = pygame.image.load(resource_path(r'backgrounds\Background1.png')).convert_alpha()
         self.world.screen = self.screen
         self.world.entities = self.entities
         self.world.limit = 3200
@@ -110,6 +124,11 @@ class App:
 
             # Generate enemies
             self.entities.generate_enemies(self.screen, self.sprites)
+
+            # Every 30 sec, generate a boss
+            if self.lastboss + 30000.0 < self.playtime:
+                self.lastboss = self.playtime
+                self.entities.generate_boss(self.screen, self.sprites)
 
             # Movement
             # Left - Right
@@ -209,7 +228,6 @@ class App:
         self.score = 0
         self.playtime = 0
         self.on_init()
-
 
 if __name__ == "__main__":
     theApp = App()

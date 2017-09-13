@@ -1,6 +1,7 @@
 from random import randint
 
 from enemies.bigbird import BigBird
+from enemies.bigboss import BigBoss
 from enemies.enemy import Enemy
 from enemies.fastjumper import FastJumper
 from enemies.fastwalker import FastWalker
@@ -36,7 +37,7 @@ class Entities:
                 if killed:
                     self.bullets.remove(bullet)
                     self.enemies.remove(killed)
-                    score += 1
+                    score += killed.points
                 elif hit:
                     self.bullets.remove(bullet)
             else:
@@ -110,3 +111,7 @@ class Entities:
             self.add_enemy(enemy)
         else:
             self.enemyindex += 1
+
+    def generate_boss(self, screen, sprites):
+        enemy = BigBoss(screen, self.char, sprites)
+        self.add_enemy(enemy)

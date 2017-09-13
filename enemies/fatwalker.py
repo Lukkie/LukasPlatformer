@@ -13,3 +13,4 @@ class FatWalker(Walker):
         self.speed = 0.5
         self.health = 20
         self.sprite = pygame.transform.smoothscale(sprites.enemy_sprites["fatwalker"], (size, size))
+        self.points = 3
